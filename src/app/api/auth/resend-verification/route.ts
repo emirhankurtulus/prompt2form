@@ -54,8 +54,13 @@ export async function POST(request: NextRequest) {
     // Send email
     try {
       await sendVerifyEmail(email, user.name, rawToken);
-    } catch (emailError) {
+    } catch (emailError: any) {
       console.error('[ResendVerification] Failed to send email:', emailError);
+      return apiError(
+        emailError?.message || 'Failed to send verification email. Please check SMTP settings.',
+        'EMAIL_SEND_FAILED',
+        500,
+      );
     }
 
     return apiSuccess({

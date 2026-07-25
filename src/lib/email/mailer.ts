@@ -50,127 +50,52 @@ function renderEmailTemplate({
   const year = new Date().getFullYear();
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta charset="utf-8">
   <title>Prompt2Form</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #09090b; width: 100%; table-layout: fixed;">
-    <tr>
-      <td align="center" style="padding: 40px 16px;">
-        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 560px; background-color: #121215; border: 1px solid #27272a; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
-          
-          <!-- Top Accent Bar -->
-          <tr>
-            <td style="height: 4px; background: linear-gradient(90deg, #7c3aed 0%, #c084fc 50%, #6366f1 100%);"></td>
-          </tr>
+<body style="margin:0; padding:20px; background-color:#09090b; font-family:Helvetica, Arial, sans-serif; color:#ffffff;">
+  <div style="max-width:540px; margin:0 auto; background-color:#121215; border:1px solid #27272a; border-radius:12px; padding:32px;">
+    
+    <div style="margin-bottom:24px;">
+      <span style="display:inline-block; background-color:#27272a; color:#a1a1aa; font-size:11px; font-weight:bold; padding:4px 10px; border-radius:4px; text-transform:uppercase;">
+        ${badgeText}
+      </span>
+    </div>
 
-          <!-- Header / Logo -->
-          <tr>
-            <td style="padding: 36px 40px 24px 40px;">
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td>
-                    <table role="presentation" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border-radius: 10px; width: 36px; height: 36px; text-align: center; vertical-align: middle; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);">
-                          <span style="color: #ffffff; font-size: 16px; font-weight: 800; font-family: monospace; line-height: 36px;">P2F</span>
-                        </td>
-                        <td style="padding-left: 12px;">
-                          <span style="color: #ffffff; font-size: 18px; font-weight: 700; letter-spacing: -0.5px;">Prompt2Form</span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+    <h1 style="margin:0 0 16px 0; color:#ffffff; font-size:22px; font-weight:bold;">
+      ${title}
+    </h1>
 
-          <!-- Divider -->
-          <tr>
-            <td style="padding: 0 40px;">
-              <div style="height: 1px; background-color: #27272a; width: 100%;"></div>
-            </td>
-          </tr>
+    <p style="margin:0 0 24px 0; color:#a1a1aa; font-size:14px; line-height:1.6;">
+      ${subtitle}
+    </p>
 
-          <!-- Main Content -->
-          <tr>
-            <td style="padding: 32px 40px 40px 40px;">
-              
-              <!-- Badge -->
-              <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
-                <tr>
-                  <td style="background-color: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 100px; padding: 4px 12px;">
-                    <span style="color: #c084fc; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">
-                      ${badgeText}
-                    </span>
-                  </td>
-                </tr>
-              </table>
+    <div style="margin-bottom:28px;">
+      <a href="${actionUrl}" target="_blank" style="display:inline-block; background-color:#ffffff; color:#09090b; text-decoration:none; font-size:14px; font-weight:bold; padding:12px 24px; border-radius:8px;">
+        ${buttonText}
+      </a>
+    </div>
 
-              <!-- Title -->
-              <h1 style="margin: 0 0 16px 0; color: #ffffff; font-size: 26px; font-weight: 700; line-height: 1.25; letter-spacing: -0.5px;">
-                ${title}
-              </h1>
+    <div style="background-color:#18181b; border:1px solid #27272a; border-radius:8px; padding:12px; margin-bottom:20px;">
+      <p style="margin:0 0 6px 0; color:#71717a; font-size:11px;">
+        Direct Link:
+      </p>
+      <a href="${actionUrl}" target="_blank" style="color:#a1a1aa; font-size:11px; word-break:break-all;">
+        ${actionUrl}
+      </a>
+    </div>
 
-              <!-- Subtitle / Body -->
-              <p style="margin: 0 0 28px 0; color: #a1a1aa; font-size: 15px; line-height: 1.6;">
-                ${subtitle}
-              </p>
+    <p style="margin:0 0 20px 0; color:#71717a; font-size:11px;">
+      ${expiryNote}
+    </p>
 
-              <!-- CTA Button -->
-              <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px; width: 100%;">
-                <tr>
-                  <td align="center">
-                    <a href="${actionUrl}" target="_blank" style="display: inline-block; width: 100%; text-align: center; box-sizing: border-box; background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 12px; box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4); border: 1px solid rgba(255,255,255,0.1);">
-                      ${buttonText} &nbsp;&rarr;
-                    </a>
-                  </td>
-                </tr>
-              </table>
+    <div style="border-top:1px solid #27272a; padding-top:16px; font-size:11px; color:#52525b; text-align:center;">
+      Prompt2Form &copy; ${year} — AI-Powered Form Builder
+    </div>
 
-              <!-- Fallback Direct Link Card -->
-              <div style="background-color: #18181b; border: 1px solid #27272a; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-                <p style="margin: 0 0 8px 0; color: #71717a; font-size: 12px; font-weight: 500;">
-                  If the button above does not work, copy and paste this link into your browser:
-                </p>
-                <p style="margin: 0; word-break: break-all; font-family: monospace; font-size: 12px; color: #c084fc; line-height: 1.4;">
-                  ${actionUrl}
-                </p>
-              </div>
-
-              <!-- Expiry & Security Note -->
-              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: rgba(39, 39, 42, 0.4); border-radius: 10px; padding: 12px 16px;">
-                <tr>
-                  <td style="color: #a1a1aa; font-size: 12px; line-height: 1.5;">
-                    Security Note: ${expiryNote}
-                  </td>
-                </tr>
-              </table>
-
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="background-color: #0d0d10; border-top: 1px solid #27272a; padding: 24px 40px; text-align: center;">
-              <p style="margin: 0 0 6px 0; color: #71717a; font-size: 12px;">
-                Designed with AI by <strong>Prompt2Form</strong>
-              </p>
-              <p style="margin: 0; color: #52525b; font-size: 11px;">
-                &copy; ${year} Prompt2Form. All rights reserved. You received this email because of an account action on Prompt2Form.
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
+  </div>
 </body>
 </html>`;
 }
@@ -195,17 +120,23 @@ export async function sendVerifyEmail(
 
   const text = `Hi ${name},\n\nThanks for signing up for Prompt2Form! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
 
-  const transporter = getTransporter();
-  const info = await transporter.sendMail({
-    from: getFromAddress(),
-    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
-    to,
-    subject: 'Verify your Prompt2Form account',
-    text,
-    html,
-  });
+  try {
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: getFromAddress(),
+      sender: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
+      replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
+      to,
+      subject: 'Verify your Prompt2Form account',
+      text,
+      html,
+    });
 
-  console.log('[sendVerifyEmail] Email sent cleanly. MessageId:', info.messageId);
+    console.log('[sendVerifyEmail] Email sent cleanly to:', to, 'MessageId:', info.messageId);
+  } catch (err) {
+    console.error('[sendVerifyEmail Error]:', err);
+    throw err;
+  }
 }
 
 // ─── Send Reset Password Email ────────────────────────────────────────────────
