@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ Prompt2Form — AI-Powered Form Builder SaaS
 
-## Getting Started
+Prompt2Form is a next-generation SaaS application that allows users to instantly generate, customize, publish, and manage interactive web forms using plain natural language prompts powered by AI.
 
-First, run the development server:
+---
 
+## 🚀 Quick Start
+
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Environment Variables
+Create a `.env.local` file in the root folder with the following variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+# Application Base URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Database Configuration
+MONGODB_URI=mongodb://localhost:27017/prompt2form
 
-## Learn More
+# Google Gemini AI Key
+GEMINI_API_KEY=your_gemini_api_key_here
 
-To learn more about Next.js, take a look at the following resources:
+# JWT Authentication Secret
+JWT_SECRET=your_jwt_secret_key_here
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Email Notification (SMTP Settings)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Run Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Core Framework**: Next.js 15 (App Router & Turbopack)
+- **Language**: TypeScript
+- **Database**: MongoDB & Mongoose ORM
+- **AI Engine**: Google Generative AI (Gemini 1.5 Flash)
+- **Interactive Drag & Drop**: `@dnd-kit/core`, `@dnd-kit/sortable`
+- **Styling & Icons**: TailwindCSS, Vanilla CSS Tokens, Lucide Icons, Sonner Toasts
+- **Animations**: Framer Motion
+- **Data Analytics**: Recharts
+- **Email Transporter**: Nodemailer (SMTP)
+- **State Management**: Zustand & React Query
+
+---
+
+## 🏗️ Project Architecture
+
+```
+prompt2form/
+├── src/
+│   ├── app/
+│   │   ├── (auth)/               # Auth pages (Sign In, Sign Up, Password Reset, Verification)
+│   │   ├── (dashboard)/          # Dashboard pages
+│   │   │   └── dashboard/
+│   │   │       ├── forms/        # Form Management, Responses (CRM), Visual Builder
+│   │   │       ├── templates/    # Pre-designed form template gallery
+│   │   │       ├── analytics/    # Recharts analytics & drop-off rate charts
+│   │   │       ├── integrations/ # Email, Webhook POST & Google Sheets Sync settings
+│   │   │       ├── settings/     # Profile & Notification preferences
+│   │   │       └── help/         # Help center, FAQ & support ticket submission
+│   │   ├── api/                  # API endpoints (Auth, Forms, AI Generation, Responses, Integrations)
+│   │   └── f/[slug]/             # Hosted public form viewer page
+│   ├── components/               # UI components, Header, Sidebar, Topbar, Modals
+│   ├── lib/                      # Database client, Gemini SDK, Nodemailer transporter, Utils
+│   ├── store/                    # Zustand client auth & UI state management
+│   └── types/                    # TypeScript schema and type definitions
+├── .env.local                    # Environment configuration
+└── README.md                     # Documentation
+```
+
+---
+
+## 🔥 Key Project Capabilities
+
+- **AI Prompt-to-Form Engine**: Generates 25+ dynamic field schemas from natural text with Gemini 1.5.
+- **WYSIWYG Visual Canvas Builder**: Interactive paper canvas with live 100%, 50%, and 33% grid column width controls and drag & drop reordering.
+- **Live Theme & Dark Mode Customizer**: Customizable accent colors, border radius, preset palettes, and full Dark Mode CSS variable compatibility.
+- **Publish & Embed Suite**: One-click public form URLs (`/f/[slug]`) and ready-to-copy HTML `<iframe>` embed code.
+- **3 Active Integrations**: Automated Email Notifications, Custom Webhook HTTP POST triggers, and Google Sheets Apps Script Web App sync.
+- **Submission CRM & Analytics**: Detail viewer popover modal, single-click CSV export, view count tracking, and conversion rate analytics.
