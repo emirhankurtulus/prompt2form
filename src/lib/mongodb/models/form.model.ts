@@ -55,7 +55,6 @@ const FormSchemaMongoose = new Schema<IForm>(
 );
 
 FormSchemaMongoose.index({ userId: 1 });
-FormSchemaMongoose.index({ slug: 1 }, { unique: true });
 FormSchemaMongoose.index({ userId: 1, monthCreated: 1 }); // fast 4/month check
 
 export const Form: Model<IForm> =
