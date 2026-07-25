@@ -1,24 +1,35 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST ?? 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT ?? '465', 10),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+function getTransporter() {
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const port = parseInt(process.env.SMTP_PORT || '465', 10);
+  const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
-const FROM_ADDRESS = {
-  name: 'Prompt2Form',
-  address: process.env.SMTP_USER ?? 'example@example.com',
-};
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+}
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+function getFromAddress() {
+  const smtpUser = process.env.SMTP_USER || 'no-reply@prompt2form.vercel.app';
+  return {
+    name: 'Prompt2Form',
+    address: smtpUser,
+  };
+}
+
+function getAppUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://prompt2form.vercel.app';
+}
 
 // ─── Base Email Template (Bulletproof HTML) ──────────────────────────────────
 
@@ -172,7 +183,7 @@ export async function sendVerifyEmail(
   name: string,
   rawToken: string,
 ): Promise<void> {
-  const verifyUrl = `${APP_URL}/verify-email/${rawToken}`;
+  const verifyUrl = `${getAppUrl()}/verify-email/${rawToken}`;
 
   const html = renderEmailTemplate({
     badgeText: 'Account Verification',
@@ -185,8 +196,9 @@ export async function sendVerifyEmail(
 
   const text = `Hi ${name},\n\nThanks for signing up for Prompt2Form! Please verify your email address by clicking the link below:\n\n${verifyUrl}\n\nThis link is valid for 24 hours.`;
 
+  const transporter = getTransporter();
   const info = await transporter.sendMail({
-    from: FROM_ADDRESS,
+    from: getFromAddress(),
     to,
     subject: 'Verify your Prompt2Form account',
     text,
@@ -203,7 +215,7 @@ export async function sendResetPasswordEmail(
   name: string,
   rawToken: string,
 ): Promise<void> {
-  const resetUrl = `${APP_URL}/reset-password/${rawToken}`;
+  const resetUrl = `${getAppUrl()}/reset-password/${rawToken}`;
 
   const html = renderEmailTemplate({
     badgeText: 'Password Reset',
@@ -216,8 +228,9 @@ export async function sendResetPasswordEmail(
 
   const text = `Hi ${name},\n\nWe received a request to reset your Prompt2Form password. Click the link below to choose a new password:\n\n${resetUrl}\n\nThis link is valid for 1 hour.`;
 
+  const transporter = getTransporter();
   const info = await transporter.sendMail({
-    from: FROM_ADDRESS,
+    from: getFromAddress(),
     to,
     subject: 'Reset your Prompt2Form password',
     text,
@@ -235,7 +248,7 @@ export async function sendFormResponseNotification(
   answers: Record<string, unknown>,
   formId: string,
 ): Promise<void> {
-  const responsesUrl = `${APP_URL}/dashboard/forms/${formId}/responses`;
+  const responsesUrl = `${getAppUrl()}/dashboard/forms/${formId}/responses`;
 
   const answersHtml = Object.entries(answers)
     .map(
@@ -262,12 +275,12 @@ export async function sendFormResponseNotification(
     .map(([k, v]) => `${k}: ${v}`)
     .join('\n')}\n\nView details: ${responsesUrl}`;
 
+  const transporter = getTransporter();
   await transporter.sendMail({
-    from: FROM_ADDRESS,
+    from: getFromAddress(),
     to,
     subject: `[New Response] ${formTitle}`,
     text,
     html,
   });
 }
-
