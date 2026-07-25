@@ -23,7 +23,7 @@ function getTransporter() {
 }
 
 function getFromAddress() {
-  return process.env.EMAIL_FROM || process.env.SMTP_USER || 'hello@emirhankurtulus.com';
+  return process.env.SMTP_USER || 'hello@emirhankurtulus.com';
 }
 
 function getAppUrl() {
