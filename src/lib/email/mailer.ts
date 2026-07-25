@@ -23,9 +23,7 @@ function getTransporter() {
 }
 
 function getFromAddress() {
-  const smtpUser = process.env.SMTP_USER || 'hello@emirhankurtulus.com';
-  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM;
-  return `Prompt2Form <${smtpUser}>`;
+  return process.env.EMAIL_FROM || process.env.SMTP_USER || 'hello@emirhankurtulus.com';
 }
 
 function getAppUrl() {
