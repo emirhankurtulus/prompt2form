@@ -51,7 +51,7 @@ const FormSchemaMongoose = new Schema<IForm>(
     seoDescription: { type: String },
     monthCreated: { type: String, required: true },
   },
-  { timestamps: true },
+  { timestamps: true, autoIndex: false },
 );
 
 FormSchemaMongoose.index({ userId: 1 });

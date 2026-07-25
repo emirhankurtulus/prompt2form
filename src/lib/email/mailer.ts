@@ -24,10 +24,8 @@ function getTransporter() {
 
 function getFromAddress() {
   const smtpUser = process.env.SMTP_USER || 'hello@emirhankurtulus.com';
-  return {
-    name: 'Prompt2Form',
-    address: smtpUser,
-  };
+  if (process.env.EMAIL_FROM) return process.env.EMAIL_FROM;
+  return `Prompt2Form <${smtpUser}>`;
 }
 
 function getAppUrl() {
@@ -202,6 +200,7 @@ export async function sendVerifyEmail(
   const transporter = getTransporter();
   const info = await transporter.sendMail({
     from: getFromAddress(),
+    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
     to,
     subject: 'Verify your Prompt2Form account',
     text,
@@ -234,6 +233,7 @@ export async function sendResetPasswordEmail(
   const transporter = getTransporter();
   const info = await transporter.sendMail({
     from: getFromAddress(),
+    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
     to,
     subject: 'Reset your Prompt2Form password',
     text,
@@ -279,11 +279,14 @@ export async function sendFormResponseNotification(
     .join('\n')}\n\nView details: ${responsesUrl}`;
 
   const transporter = getTransporter();
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: getFromAddress(),
+    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
     to,
     subject: `[New Response] ${formTitle}`,
     text,
     html,
   });
+
+  console.log('[sendFormResponseNotification] Email sent cleanly. MessageId:', info.messageId);
 }

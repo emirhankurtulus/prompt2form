@@ -37,7 +37,7 @@ const UserSchema = new Schema<IUser>(
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true, autoIndex: false },
 );
 
 export const User: Model<IUser> =
