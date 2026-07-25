@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 function getTransporter() {
-  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const host = process.env.SMTP_HOST || 'emirhankurtulus.com';
   const port = parseInt(process.env.SMTP_PORT || '465', 10);
   const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
@@ -13,6 +13,9 @@ function getTransporter() {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
+    connectionTimeout: 10000, // 10s connection timeout for serverless
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     tls: {
       rejectUnauthorized: false,
     },
@@ -20,7 +23,7 @@ function getTransporter() {
 }
 
 function getFromAddress() {
-  const smtpUser = process.env.SMTP_USER || 'no-reply@prompt2form.vercel.app';
+  const smtpUser = process.env.SMTP_USER || 'hello@emirhankurtulus.com';
   return {
     name: 'Prompt2Form',
     address: smtpUser,

@@ -107,17 +107,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       : [];
 
     if (isEmailEnabled && recipientEmails.length > 0) {
-      recipientEmails.forEach((email) => {
-        sendFormResponseNotification(email, form.title, answers, form._id.toString()).catch((err) => {
-          console.error('[Email Notification Send Error]:', err);
-        });
-      });
+      await Promise.allSettled(
+        recipientEmails.map((email) =>
+          sendFormResponseNotification(email, form.title, answers, form._id.toString()).catch((err) => {
+            console.error('[Email Notification Send Error]:', err);
+          }),
+        ),
+      );
     }
 
     if (config) {
       // 2. Custom Webhook Trigger
       if (config.webhookEnabled && config.webhookUrl) {
-        fetch(config.webhookUrl, {
+        await fetch(config.webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -126,7 +128,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
       // 3. Google Sheets Trigger (Web App Script Sync)
       if (config.googleSheetsEnabled && config.googleSheetsWebhookUrl) {
-        fetch(config.googleSheetsWebhookUrl, {
+        await fetch(config.googleSheetsWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
