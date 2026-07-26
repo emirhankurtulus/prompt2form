@@ -551,6 +551,7 @@ export default function FormBuilderPage() {
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedEmbed, setCopiedEmbed] = useState(false);
+  const [activeMobileSide, setActiveMobileSide] = useState<'canvas' | 'components' | 'properties'>('canvas');
 
   // Fetch form data
   const { data, isLoading } = useQuery({
@@ -723,47 +724,40 @@ export default function FormBuilderPage() {
   const previewWidth = previewDevice === 'desktop' ? '100%' : previewDevice === 'tablet' ? '768px' : '375px';
 
   return (
-    <div className="h-screen flex flex-col" style={{ background: 'var(--background-secondary)' }}>
+    <div className="h-screen flex flex-col overflow-hidden bg-zinc-950 text-white select-none">
       {/* Top Header */}
       <div
-        className="h-14 flex items-center justify-between px-4 flex-shrink-0 border-b z-20"
-        style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+        className="h-14 flex items-center justify-between px-3 flex-shrink-0 border-b border-zinc-800 bg-zinc-950 z-20"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => router.push('/dashboard/forms')}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--card-hover)] transition-colors"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-zinc-900 transition-colors"
           >
             <ArrowLeft size={16} />
           </button>
-          <div className="min-w-0 flex items-center gap-2">
-            <h2 className="text-sm font-bold truncate" style={{ color: 'var(--foreground)' }}>
+          <div className="min-w-0 flex items-center gap-1.5">
+            <h2 className="text-xs sm:text-sm font-bold truncate">
               {localSchema?.title || form?.title || 'Visual Form Builder'}
             </h2>
             <span
-              className={cn('text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full')}
-              style={{
-                background: status === 'PUBLISHED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)',
-                color: status === 'PUBLISHED' ? '#22c55e' : '#f59e0b',
-              }}
+              className={cn('text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800')}
             >
               {status}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Device Frames */}
-          <div className="hidden md:flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--background-secondary)' }}>
+        <div className="flex items-center gap-1.5">
+          {/* Device Frames (Hidden on Mobile) */}
+          <div className="hidden lg:flex items-center gap-1 p-1 rounded-xl bg-zinc-900 border border-zinc-800">
             {([['desktop', Monitor], ['tablet', Tablet], ['mobile', Smartphone]] as const).map(([device, Icon]) => (
               <button
                 key={device}
                 onClick={() => { setPreviewDevice(device); setShowPreview(true); }}
-                className={cn('w-7 h-7 rounded-md flex items-center justify-center transition-all', previewDevice === device && showPreview && 'shadow-sm')}
-                style={previewDevice === device && showPreview ? { background: 'var(--card)', color: 'var(--primary)' } : { color: 'var(--foreground-muted)' }}
+                className={cn('w-7 h-7 rounded-lg flex items-center justify-center transition-all', previewDevice === device && showPreview && 'bg-white text-zinc-950 shadow-sm')}
               >
-                <Icon size={14} />
+                <Icon size={12} />
               </button>
             ))}
           </div>
@@ -771,63 +765,66 @@ export default function FormBuilderPage() {
           {/* Interactive Live Preview */}
           <button
             onClick={() => setShowPreview(!showPreview)}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all"
-            style={showPreview ? { background: 'var(--primary)', color: 'white' } : { background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+            className="px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-all"
           >
-            <Eye size={13} /> {showPreview ? 'Edit Canvas' : 'Live Preview'}
+            <Eye size={13} />
+            <span className="hidden sm:inline">{showPreview ? 'Edit Canvas' : 'Preview'}</span>
           </button>
 
           {/* Save Draft */}
           <button
             onClick={() => saveMutation.mutate(undefined)}
             disabled={saveMutation.isPending}
-            className="px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all hover:bg-[var(--card-hover)] flex items-center gap-1.5"
-            style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}
+            className="px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-zinc-800 bg-zinc-900 text-white transition-all hover:bg-zinc-800 flex items-center gap-1"
           >
             {saveMutation.isPending ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-            Save
+            <span className="hidden sm:inline">Save</span>
           </button>
 
           {/* Publish & Share Button */}
           <button
             onClick={status === 'PUBLISHED' ? () => setShowPublishModal(true) : handlePublish}
             disabled={saveMutation.isPending}
-            className="px-4 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-1.5 transition-all shadow-sm hover:brightness-110"
-            style={{ background: 'var(--primary)' }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-zinc-950 flex items-center gap-1 transition-all shadow-sm hover:bg-zinc-200"
           >
-            <Globe2 size={13} /> {status === 'PUBLISHED' ? 'Share & Embed' : 'Publish Form'}
+            <Globe2 size={13} />
+            <span>{status === 'PUBLISHED' ? 'Share' : 'Publish'}</span>
           </button>
         </div>
       </div>
 
       {/* Main Content Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left: Component Library */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Left: Component Library (Responsive Columns) */}
         {!showPreview && (
           <div
-            className="w-64 flex-shrink-0 border-r overflow-y-auto p-3 space-y-4"
-            style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+            className={cn(
+              "w-full lg:w-64 flex-shrink-0 border-r border-zinc-800 overflow-y-auto p-3 space-y-4 bg-zinc-950 lg:block",
+              activeMobileSide === 'components' ? 'block absolute inset-0 z-10' : 'hidden'
+            )}
           >
             <div className="px-1 flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                 Components
               </h3>
-              <span className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Click to add</span>
+              <span className="text-[10px] text-zinc-600">Click to add</span>
             </div>
 
             {Object.entries(categories).map(([cat, types]) => (
               <div key={cat} className="space-y-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider px-1" style={{ color: 'var(--foreground-subtle)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider px-1 text-zinc-500">
                   {cat}
                 </p>
                 {types.map((ft) => (
                   <button
                     key={ft.type}
-                    onClick={() => addField(ft)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all hover:bg-[var(--card-hover)] border border-transparent hover:border-[var(--border)] text-left"
-                    style={{ color: 'var(--foreground)' }}
+                    onClick={() => {
+                      addField(ft);
+                      setActiveMobileSide('canvas');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white transition-all hover:bg-zinc-800 text-left"
                   >
-                    <span style={{ color: 'var(--primary)' }}>{ft.icon}</span>
+                    <span>{ft.icon}</span>
                     {ft.label}
                     <Plus size={12} className="ml-auto opacity-40" />
                   </button>
@@ -839,13 +836,16 @@ export default function FormBuilderPage() {
 
         {/* Center: Live Dynamic Canvas */}
         <div
-          className="flex-1 overflow-y-auto p-6 flex flex-col items-center transition-colors duration-200"
+          className={cn(
+            "flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col items-center transition-colors duration-200 lg:block",
+            activeMobileSide === 'canvas' ? 'block' : 'hidden lg:block'
+          )}
           style={{ background: theme.backgroundColor || '#f4f4f5' }}
         >
-          <div className="w-full max-w-3xl transition-all duration-300" style={{ maxWidth: previewWidth }}>
+          <div className="w-full max-w-3xl transition-all duration-300 overflow-x-hidden" style={{ maxWidth: previewWidth }}>
             {/* Visual Paper Sheet with Custom Theme Styles */}
             <div
-              className="border p-8 shadow-md space-y-6 min-h-[600px] transition-all duration-200"
+              className="border p-4 sm:p-8 shadow-md space-y-6 min-h-[600px] transition-all duration-200"
               style={{
                 background: theme.inputBg || '#ffffff',
                 borderColor: 'var(--border)',
@@ -856,11 +856,11 @@ export default function FormBuilderPage() {
               <div className="border-b pb-4 space-y-2" style={{ borderColor: 'var(--border)' }}>
                 {showPreview ? (
                   <>
-                    <h1 className="text-2xl font-bold" style={{ color: theme.textColor || '#09090b' }}>
+                    <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor || '#09090b' }}>
                       {localSchema?.title || form?.title || 'Untitled Form'}
                     </h1>
                     {(localSchema?.description || form?.description) && (
-                      <p className="text-sm opacity-75" style={{ color: theme.textColor || '#09090b' }}>
+                      <p className="text-xs sm:text-sm opacity-75" style={{ color: theme.textColor || '#09090b' }}>
                         {localSchema?.description || form?.description}
                       </p>
                     )}
@@ -872,7 +872,7 @@ export default function FormBuilderPage() {
                       value={localSchema?.title ?? form?.title ?? ''}
                       onChange={(e) => updateFormHeader(e.target.value, localSchema?.description ?? form?.description ?? '')}
                       placeholder="Form Title..."
-                      className="w-full text-2xl font-bold bg-transparent outline-none border-b border-transparent hover:border-zinc-300 focus:border-[var(--primary)] transition-all"
+                      className="w-full text-xl sm:text-2xl font-bold bg-transparent outline-none border-b border-transparent hover:border-zinc-300 focus:border-[var(--primary)] transition-all"
                       style={{ color: theme.textColor || '#09090b' }}
                     />
                     <input
@@ -880,7 +880,7 @@ export default function FormBuilderPage() {
                       value={localSchema?.description ?? form?.description ?? ''}
                       onChange={(e) => updateFormHeader(localSchema?.title ?? form?.title ?? '', e.target.value)}
                       placeholder="Add form description..."
-                      className="w-full text-sm opacity-75 bg-transparent outline-none border-b border-transparent hover:border-zinc-300 focus:border-[var(--primary)] transition-all"
+                      className="w-full text-xs sm:text-sm opacity-75 bg-transparent outline-none border-b border-transparent hover:border-zinc-300 focus:border-[var(--primary)] transition-all"
                       style={{ color: theme.textColor || '#09090b' }}
                     />
                   </>
@@ -889,12 +889,12 @@ export default function FormBuilderPage() {
 
               {/* Canvas Items */}
               {fields.length === 0 ? (
-                <div className="border-2 border-dashed rounded-2xl p-16 text-center space-y-3" style={{ borderColor: 'var(--border)' }}>
+                <div className="border-2 border-dashed rounded-2xl p-8 sm:p-16 text-center space-y-3" style={{ borderColor: 'var(--border)' }}>
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto" style={{ background: 'rgba(124,58,237,0.1)' }}>
                     <Layout size={22} style={{ color: theme.primaryColor || 'var(--primary)' }} />
                   </div>
-                  <h3 className="text-base font-bold" style={{ color: theme.textColor || '#09090b' }}>Your Canvas is Empty</h3>
-                  <p className="text-xs opacity-70" style={{ color: theme.textColor || '#09090b' }}>
+                  <h3 className="text-sm sm:text-base font-bold" style={{ color: theme.textColor || '#09090b' }}>Your Canvas is Empty</h3>
+                  <p className="text-[10px] sm:text-xs opacity-70" style={{ color: theme.textColor || '#09090b' }}>
                     Click components from the left panel to add fields to your form.
                   </p>
                 </div>
@@ -908,7 +908,12 @@ export default function FormBuilderPage() {
                           field={field}
                           isSelected={selectedFieldId === field.id}
                           theme={theme}
-                          onSelect={() => { setSelectedFieldId(field.id); setActiveRightTab('field'); }}
+                          onSelect={() => {
+                            setSelectedFieldId(field.id);
+                            if (window.innerWidth < 1024) {
+                              setActiveMobileSide('properties');
+                            }
+                          }}
                           onDelete={() => deleteField(field.id)}
                           onDuplicate={() => duplicateField(field.id)}
                           onWidthChange={(w) => updateField({ ...field, style: { ...field.style, width: w } })}
@@ -938,19 +943,21 @@ export default function FormBuilderPage() {
           </div>
         </div>
 
-        {/* Right Sidebar with Tabs (Dark Mode Compatible) */}
+        {/* Right Sidebar with Tabs (Responsive Columns) */}
         {!showPreview && (
           <div
-            className="w-72 flex-shrink-0 border-l flex flex-col overflow-hidden"
-            style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
+            className={cn(
+              "w-full lg:w-72 flex-shrink-0 border-l border-zinc-800 flex flex-col overflow-hidden bg-zinc-950 lg:block",
+              activeMobileSide === 'properties' ? 'block absolute inset-0 z-10' : 'hidden'
+            )}
           >
             {/* Tab Header */}
-            <div className="flex border-b" style={{ borderColor: 'var(--border)' }}>
+            <div className="flex border-b border-zinc-800">
               <button
                 onClick={() => setActiveRightTab('field')}
                 className={cn(
                   'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 transition-all border-b-2',
-                  activeRightTab === 'field' ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--background-secondary)]' : 'border-transparent text-[var(--foreground-muted)] hover:bg-[var(--card-hover)]',
+                  activeRightTab === 'field' ? 'border-white text-white bg-zinc-900' : 'border-transparent text-zinc-400 hover:bg-zinc-900',
                 )}
               >
                 <Layout size={13} /> Field
@@ -959,7 +966,7 @@ export default function FormBuilderPage() {
                 onClick={() => setActiveRightTab('theme')}
                 className={cn(
                   'flex-1 py-3 text-xs font-bold flex items-center justify-center gap-1.5 transition-all border-b-2',
-                  activeRightTab === 'theme' ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--background-secondary)]' : 'border-transparent text-[var(--foreground-muted)] hover:bg-[var(--card-hover)]',
+                  activeRightTab === 'theme' ? 'border-white text-white bg-zinc-900' : 'border-transparent text-zinc-400 hover:bg-zinc-900',
                 )}
               >
                 <Palette size={13} /> Theme
@@ -974,7 +981,10 @@ export default function FormBuilderPage() {
                   schema={localSchema}
                   onChange={updateField}
                   onUpdateFormHeader={updateFormHeader}
-                  onClose={() => setSelectedFieldId(null)}
+                  onClose={() => {
+                    setSelectedFieldId(null);
+                    setActiveMobileSide('canvas');
+                  }}
                 />
               ) : (
                 <ThemeEditor
@@ -987,7 +997,41 @@ export default function FormBuilderPage() {
         )}
       </div>
 
-      {/* Publish & Share Modal */}
+      {/* ─── Mobile Bottom Navigation Bar ─── */}
+      {!showPreview && (
+        <div className="lg:hidden h-14 border-t border-zinc-800 bg-zinc-950 flex items-center justify-around px-2 flex-shrink-0 z-20">
+          <button
+            onClick={() => setActiveMobileSide('components')}
+            className={cn(
+              "flex flex-col items-center gap-1 text-[10px] font-bold py-1 px-3 rounded-lg transition-all",
+              activeMobileSide === 'components' ? 'text-white bg-zinc-900' : 'text-zinc-500'
+            )}
+          >
+            <Plus size={16} />
+            <span>Components</span>
+          </button>
+          <button
+            onClick={() => setActiveMobileSide('canvas')}
+            className={cn(
+              "flex flex-col items-center gap-1 text-[10px] font-bold py-1 px-3 rounded-lg transition-all",
+              activeMobileSide === 'canvas' ? 'text-white bg-zinc-900' : 'text-zinc-500'
+            )}
+          >
+            <Layout size={16} />
+            <span>Canvas</span>
+          </button>
+          <button
+            onClick={() => setActiveMobileSide('properties')}
+            className={cn(
+              "flex flex-col items-center gap-1 text-[10px] font-bold py-1 px-3 rounded-lg transition-all",
+              activeMobileSide === 'properties' ? 'text-white bg-zinc-900' : 'text-zinc-500'
+            )}
+          >
+            <Palette size={16} />
+            <span>Properties</span>
+          </button>
+        </div>
+      )}
       {showPublishModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }}>
           <div

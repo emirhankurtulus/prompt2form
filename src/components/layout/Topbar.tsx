@@ -3,13 +3,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Search, Moon, Sun, Bell, Settings, LogOut, User, Check, Sparkles, FileText, X } from 'lucide-react';
+import { Search, Moon, Sun, Bell, Settings, LogOut, FileText, Sparkles, Menu, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useAuthStore } from '@/store/authStore';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-// Breadcrumb label map
 const BREADCRUMB_MAP: Record<string, string> = {
   dashboard: 'Dashboard',
   forms: 'My Forms',
@@ -29,16 +28,15 @@ function Breadcrumbs() {
   const segments = pathname.split('/').filter(Boolean);
 
   return (
-    <nav className="flex items-center gap-1.5">
+    <nav className="hidden sm:flex items-center gap-1.5">
       {segments.map((seg, i) => {
         const label = BREADCRUMB_MAP[seg] ?? seg;
         const isLast = i === segments.length - 1;
         return (
           <span key={seg} className="flex items-center gap-1.5">
-            {i > 0 && <span className="text-xs" style={{ color: 'var(--foreground-subtle)' }}>/</span>}
+            {i > 0 && <span className="text-[10px] text-zinc-600">/</span>}
             <span
-              className={cn('text-sm', isLast ? 'font-semibold' : 'font-normal')}
-              style={{ color: isLast ? 'var(--foreground)' : 'var(--foreground-muted)' }}
+              className={cn('text-xs font-medium', isLast ? 'text-zinc-200' : 'text-zinc-500')}
             >
               {label}
             </span>
@@ -51,16 +49,16 @@ function Breadcrumbs() {
 
 interface TopbarProps {
   onCommandPaletteOpen: () => void;
+  onMenuToggle: () => void;
 }
 
-export function Topbar({ onCommandPaletteOpen }: TopbarProps) {
+export function Topbar({ onCommandPaletteOpen, onMenuToggle }: TopbarProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [mounted, setMounted] = useState(false);
 
-  // Popover menus state
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -69,7 +67,6 @@ export function Topbar({ onCommandPaletteOpen }: TopbarProps) {
 
   useEffect(() => setMounted(true), []);
 
-  // Close menus on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (notificationsRef.current && !notificationsRef.current.contains(e.target as Node)) {
@@ -100,71 +97,75 @@ export function Topbar({ onCommandPaletteOpen }: TopbarProps) {
   ];
 
   return (
-    <header
-      className="h-14 flex items-center justify-between px-4 border-b flex-shrink-0 relative z-30"
-      style={{ background: 'var(--background)', borderColor: 'var(--border)' }}
-    >
-      {/* Left: breadcrumbs */}
-      <Breadcrumbs />
+    <header className="h-14 flex items-center justify-between px-4 border-b border-zinc-800 bg-zinc-950 flex-shrink-0 relative z-30">
+      {/* Left: Hamburger menu (mobile) & Breadcrumbs (desktop) */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onMenuToggle}
+          className="lg:hidden p-2 -ml-1 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 active:scale-95 transition-all"
+        >
+          <Menu size={18} />
+        </button>
+        
+        {/* Logo fallback for extremely small screens */}
+        <Link href="/dashboard" className="sm:hidden font-black text-xs text-white bg-zinc-900 px-2.5 py-1.5 rounded-lg border border-zinc-800">
+          P2F
+        </Link>
+        
+        <Breadcrumbs />
+      </div>
 
       {/* Right: actions */}
       <div className="flex items-center gap-1.5">
         {/* Command palette trigger */}
         <button
           onClick={onCommandPaletteOpen}
-          className="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition-colors hover:bg-[var(--card-hover)] border"
-          style={{ borderColor: 'var(--border)', color: 'var(--foreground-muted)' }}
+          className="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 transition-all"
         >
           <Search size={12} />
           <span>Search</span>
           <span className="flex items-center gap-0.5 opacity-60">
-            <kbd className="px-1 py-0.5 rounded text-xs font-mono" style={{ background: 'var(--border)' }}>⌘</kbd>
-            <kbd className="px-1 py-0.5 rounded text-xs font-mono" style={{ background: 'var(--border)' }}>K</kbd>
+            <kbd className="px-1 py-0.5 rounded text-[10px] font-mono bg-zinc-800">⌘</kbd>
+            <kbd className="px-1 py-0.5 rounded text-[10px] font-mono bg-zinc-800">K</kbd>
           </span>
         </button>
 
-        {/* Notifications Popover Trigger */}
+        {/* Notifications Popover */}
         <div className="relative" ref={notificationsRef}>
           <button
             onClick={() => { setShowNotifications(!showNotifications); setShowUserMenu(false); }}
-            className="relative w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--card-hover)]"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="relative w-8 h-8 flex items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
             title="Notifications"
           >
             <Bell size={16} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ background: 'var(--primary)' }} />
+            <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-white" />
           </button>
 
-          {/* Notifications Dropdown */}
           {showNotifications && (
-            <div
-              className="absolute right-0 top-10 w-80 rounded-2xl border shadow-xl p-4 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100"
-              style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
-            >
-              <div className="flex items-center justify-between pb-2 border-b" style={{ borderColor: 'var(--border)' }}>
-                <h4 className="text-xs font-bold" style={{ color: 'var(--foreground)' }}>Notifications</h4>
+            <div className="absolute right-0 top-11 w-72 rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl p-3.5 space-y-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+                <h4 className="text-xs font-bold text-white">Notifications</h4>
                 <Link
                   href="/dashboard/notifications"
                   onClick={() => setShowNotifications(false)}
-                  className="text-[11px] font-semibold hover:underline"
-                  style={{ color: 'var(--primary)' }}
+                  className="text-[10px] font-bold text-zinc-400 hover:text-white"
                 >
                   View All
                 </Link>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {sampleNotifications.map((n) => {
                   const Icon = n.icon;
                   return (
-                    <div key={n.id} className="flex items-start gap-2.5 p-2 rounded-xl transition-colors hover:bg-[var(--background-secondary)]">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'rgba(124,58,237,0.1)' }}>
-                        <Icon size={14} style={{ color: 'var(--primary)' }} />
+                    <div key={n.id} className="flex items-start gap-2.5 p-2 rounded-xl transition-all hover:bg-zinc-900">
+                      <div className="w-6.5 h-6.5 rounded-lg flex items-center justify-center bg-zinc-900 border border-zinc-800 text-white flex-shrink-0 mt-0.5">
+                        <Icon size={12} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold truncate" style={{ color: 'var(--foreground)' }}>{n.title}</p>
-                        <p className="text-[11px] truncate" style={{ color: 'var(--foreground-muted)' }}>{n.text}</p>
-                        <span className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>{n.time}</span>
+                        <p className="text-xs font-bold text-white truncate">{n.title}</p>
+                        <p className="text-[10px] text-zinc-400 truncate">{n.text}</p>
+                        <span className="text-[9px] text-zinc-500">{n.time}</span>
                       </div>
                     </div>
                   );
@@ -178,8 +179,7 @@ export function Topbar({ onCommandPaletteOpen }: TopbarProps) {
         {mounted && (
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-[var(--card-hover)]"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="w-8 h-8 flex items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
             title="Toggle theme"
           >
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
@@ -190,37 +190,31 @@ export function Topbar({ onCommandPaletteOpen }: TopbarProps) {
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false); }}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white ml-1 cursor-pointer transition-transform active:scale-95 shadow-sm"
-            style={{ background: 'linear-gradient(135deg, var(--primary), hsl(300,60%,55%))' }}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black bg-white text-zinc-950 ml-1 cursor-pointer transition-transform active:scale-95 shadow-sm"
           >
             {user?.name?.[0]?.toUpperCase() ?? 'U'}
           </button>
 
-          {/* User Menu Popover */}
           {showUserMenu && (
-            <div
-              className="absolute right-0 top-10 w-56 rounded-2xl border shadow-xl p-2 space-y-1 z-50 animate-in fade-in zoom-in-95 duration-100"
-              style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
-            >
-              <div className="p-2.5 border-b mb-1" style={{ borderColor: 'var(--border)' }}>
-                <p className="text-xs font-bold truncate" style={{ color: 'var(--foreground)' }}>{user?.name ?? 'User'}</p>
-                <p className="text-[11px] truncate" style={{ color: 'var(--foreground-muted)' }}>{user?.email}</p>
+            <div className="absolute right-0 top-11 w-52 rounded-2xl border border-zinc-800 bg-zinc-950 shadow-2xl p-2 space-y-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="p-2 border-b border-zinc-800 mb-1">
+                <p className="text-xs font-bold text-white truncate">{user?.name ?? 'User'}</p>
+                <p className="text-[10px] text-zinc-500 truncate">{user?.email}</p>
               </div>
 
               <Link
                 href="/dashboard/settings"
                 onClick={() => setShowUserMenu(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors hover:bg-[var(--card-hover)]"
-                style={{ color: 'var(--foreground)' }}
+                className="flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all"
               >
-                <Settings size={14} /> Settings
+                <Settings size={13} /> Settings
               </Link>
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors hover:bg-red-500/10 text-red-500 text-left"
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-all text-left"
               >
-                <LogOut size={14} /> Sign Out
+                <LogOut size={13} /> Sign Out
               </button>
             </div>
           )}

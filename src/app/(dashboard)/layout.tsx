@@ -8,7 +8,7 @@ import { CommandPalette } from '@/components/layout/CommandPalette';
 import { useAuthStore } from '@/store/authStore';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const router = useRouter();
   const { user, setUser, setLoading } = useAuthStore();
@@ -44,13 +44,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+    <div className="flex h-screen overflow-hidden bg-zinc-950 text-white select-none">
+      {/* Sidebar with Desktop mode + Mobile drawer mode */}
+      <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Topbar onCommandPaletteOpen={() => setCmdOpen(true)} />
+        {/* Topbar with Burger toggle button for mobile */}
+        <Topbar 
+          onCommandPaletteOpen={() => setCmdOpen(true)} 
+          onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} 
+        />
 
-        <main className="flex-1 overflow-y-auto" style={{ background: 'var(--background-secondary)' }}>
+        <main className="flex-1 overflow-y-auto bg-zinc-900">
           <div className="h-full">
             {children}
           </div>
