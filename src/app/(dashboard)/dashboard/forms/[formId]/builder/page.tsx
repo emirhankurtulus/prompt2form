@@ -229,15 +229,15 @@ function ThemeEditor({
   };
 
   return (
-    <div className="space-y-5 p-4 overflow-y-auto h-full">
-      <div className="space-y-1 pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
-        <h3 className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>Theme & Styling</h3>
-        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Customize colors, fonts, and background styling for your form.</p>
+    <div className="space-y-5 p-4 overflow-y-auto h-full text-zinc-300">
+      <div className="space-y-1 pb-3 border-b border-zinc-800">
+        <h3 className="text-sm font-bold text-white">Theme & Styling</h3>
+        <p className="text-xs text-zinc-500">Customize colors, fonts, and background styling for your form.</p>
       </div>
 
       {/* Preset Palettes */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Preset Color Palettes</label>
+        <label className="text-xs font-semibold text-zinc-400">Preset Color Palettes</label>
         <div className="grid grid-cols-1 gap-2">
           {PRESET_PALETTES.map((p) => (
             <button
@@ -250,14 +250,13 @@ function ThemeEditor({
                 textColor: p.text,
                 buttonBg: p.primary,
               })}
-              className="flex items-center justify-between p-2.5 rounded-xl border hover:shadow-sm transition-all text-left bg-[var(--card)]"
-              style={{ borderColor: 'var(--border)' }}
+              className="flex items-center justify-between p-2.5 rounded-xl border border-zinc-800 hover:border-zinc-700 transition-all text-left bg-zinc-900/60"
             >
-              <span className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>{p.name}</span>
+              <span className="text-xs font-bold text-white">{p.name}</span>
               <div className="flex items-center gap-1.5">
                 <span className="w-4 h-4 rounded-full" style={{ background: p.primary }} />
-                <span className="w-4 h-4 rounded-full border" style={{ background: p.bg }} />
-                <span className="w-4 h-4 rounded-full border" style={{ background: p.card }} />
+                <span className="w-4 h-4 rounded-full border border-zinc-800" style={{ background: p.bg }} />
+                <span className="w-4 h-4 rounded-full border border-zinc-800" style={{ background: p.card }} />
               </div>
             </button>
           ))}
@@ -265,70 +264,70 @@ function ThemeEditor({
       </div>
 
       {/* Color pickers */}
-      <div className="space-y-3 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
-        <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>Custom Colors</h4>
+      <div className="space-y-3 pt-3 border-t border-zinc-800">
+        <h4 className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Custom Colors</h4>
 
         {/* Primary Color */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>Primary Accent Color</p>
-            <p className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Submit button & focus outlines</p>
+            <p className="text-xs font-bold text-zinc-300">Primary Accent Color</p>
+            <p className="text-[10px] text-zinc-500">Submit button & focus outlines</p>
           </div>
           <input
             type="color"
             value={theme.primaryColor || '#7c3aed'}
             onChange={(e) => update('primaryColor', e.target.value)}
-            className="w-8 h-8 rounded-lg cursor-pointer border-0"
+            className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
           />
         </div>
 
         {/* Page Background */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>Page Background</p>
-            <p className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Outer area canvas color</p>
+            <p className="text-xs font-bold text-zinc-300">Page Background</p>
+            <p className="text-[10px] text-zinc-500">Outer area canvas color</p>
           </div>
           <input
             type="color"
             value={theme.backgroundColor || '#f4f4f5'}
             onChange={(e) => update('backgroundColor', e.target.value)}
-            className="w-8 h-8 rounded-lg cursor-pointer border-0"
+            className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
           />
         </div>
 
         {/* Card Background */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>Form Card Color</p>
-            <p className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Inner form sheet background</p>
+            <p className="text-xs font-bold text-zinc-300">Form Card Color</p>
+            <p className="text-[10px] text-zinc-500">Inner form sheet background</p>
           </div>
           <input
             type="color"
             value={theme.inputBg || '#ffffff'}
             onChange={(e) => update('inputBg', e.target.value)}
-            className="w-8 h-8 rounded-lg cursor-pointer border-0"
+            className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
           />
         </div>
 
         {/* Text Color */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>Text Color</p>
-            <p className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Headings and field labels</p>
+            <p className="text-xs font-bold text-zinc-300">Text Color</p>
+            <p className="text-[10px] text-zinc-500">Headings and field labels</p>
           </div>
           <input
             type="color"
             value={theme.textColor || '#09090b'}
             onChange={(e) => update('textColor', e.target.value)}
-            className="w-8 h-8 rounded-lg cursor-pointer border-0"
+            className="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent"
           />
         </div>
       </div>
 
       {/* Border Radius */}
-      <div className="space-y-2 pt-3 border-t" style={{ borderColor: 'var(--border)' }}>
-        <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Border Radius</label>
-        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-[var(--background-secondary)] border" style={{ borderColor: 'var(--border)' }}>
+      <div className="space-y-2 pt-3 border-t border-zinc-800">
+        <label className="text-xs font-semibold text-zinc-400">Border Radius</label>
+        <div className="grid grid-cols-4 gap-1.5 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
           {[
             { key: '0px', label: 'Sharp (0)' },
             { key: '8px', label: 'Sm (8)' },
@@ -340,7 +339,7 @@ function ThemeEditor({
               onClick={() => update('borderRadius', r.key)}
               className={cn(
                 'py-1.5 rounded-lg text-[10px] font-bold transition-all',
-                (theme.borderRadius || '16px') === r.key ? 'bg-[var(--primary)] text-white shadow-sm' : 'text-[var(--foreground-muted)] hover:bg-[var(--card)]',
+                (theme.borderRadius || '16px') === r.key ? 'bg-white text-zinc-950 shadow-sm' : 'text-zinc-400 hover:bg-zinc-900',
               )}
             >
               {r.label}
@@ -364,39 +363,37 @@ function PropertiesPanel({
 }) {
   if (!field) {
     return (
-      <div className="p-4 space-y-4 overflow-y-auto h-full">
-        <div className="pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
-          <h3 className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>Form Header & Info</h3>
-          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Customize your form title and description.</p>
+      <div className="p-4 space-y-4 overflow-y-auto h-full text-zinc-300">
+        <div className="pb-3 border-b border-zinc-800">
+          <h3 className="text-sm font-bold text-white">Form Header & Info</h3>
+          <p className="text-xs text-zinc-500">Customize your form title and description.</p>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Form Title</label>
+          <label className="text-xs font-semibold text-zinc-400">Form Title</label>
           <input
             type="text"
             value={schema?.title ?? ''}
             onChange={(e) => onUpdateFormHeader?.(e.target.value, schema?.description ?? '')}
             placeholder="Enter form title..."
-            className="w-full px-3 py-2 rounded-xl text-sm outline-none font-bold"
-            style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            className="w-full px-3 py-2.5 rounded-xl text-xs font-bold outline-none bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-zinc-500"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Form Description</label>
+          <label className="text-xs font-semibold text-zinc-400">Form Description</label>
           <textarea
             rows={3}
             value={schema?.description ?? ''}
             onChange={(e) => onUpdateFormHeader?.(schema?.title ?? '', e.target.value)}
             placeholder="Enter form description..."
-            className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none font-medium"
-            style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            className="w-full px-3 py-2.5 rounded-xl text-xs font-medium outline-none resize-none bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-zinc-500"
           />
         </div>
 
-        <div className="p-3 rounded-xl bg-[var(--background-secondary)] border text-xs space-y-1" style={{ borderColor: 'var(--border)' }}>
-          <p className="font-semibold" style={{ color: 'var(--foreground)' }}>💡 Pro Tip</p>
-          <p style={{ color: 'var(--foreground-muted)' }}>You can also click directly on the title or description text on the canvas to edit them live.</p>
+        <div className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-xs space-y-1.5">
+          <p className="font-bold text-white">💡 Pro Tip</p>
+          <p className="text-zinc-400 leading-relaxed">You can also click directly on the title or description text on the canvas to edit them live.</p>
         </div>
       </div>
     );
@@ -417,20 +414,20 @@ function PropertiesPanel({
   const hasOptions = ['dropdown', 'multi-select', 'radio', 'checkbox'].includes(field.type);
 
   return (
-    <div className="h-full overflow-y-auto p-4 space-y-5">
-      <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: 'var(--border)' }}>
+    <div className="h-full overflow-y-auto p-4 space-y-5 text-zinc-300">
+      <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
         <div>
-          <h3 className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>Field Properties</h3>
-          <span className="text-[10px] font-semibold text-[var(--primary)] uppercase">{field.type}</span>
+          <h3 className="text-sm font-bold text-white">Field Properties</h3>
+          <span className="text-[10px] font-black text-white bg-zinc-800 px-2 py-0.5 rounded-md uppercase">{field.type}</span>
         </div>
-        <button onClick={onClose} className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--card-hover)]" style={{ color: 'var(--foreground-muted)' }}>
+        <button onClick={onClose} className="w-6 h-6 rounded-lg flex items-center justify-center hover:bg-zinc-900 text-zinc-400 hover:text-white transition-all">
           <X size={14} />
         </button>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Column Width</label>
-        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[var(--background-secondary)] border" style={{ borderColor: 'var(--border)' }}>
+        <label className="text-xs font-semibold text-zinc-400">Column Width</label>
+        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-zinc-950 border border-zinc-800">
           {[
             { key: 'full', label: '100% Full' },
             { key: 'half', label: '50% Half' },
@@ -440,8 +437,8 @@ function PropertiesPanel({
               key={w.key}
               onClick={() => updateStyle('width', w.key)}
               className={cn(
-                'py-1.5 rounded-lg text-xs font-semibold transition-all',
-                (field.style?.width || 'full') === w.key ? 'bg-[var(--primary)] text-white shadow-sm' : 'text-[var(--foreground-muted)] hover:bg-[var(--card)]',
+                'py-1.5 rounded-lg text-[10px] font-bold transition-all',
+                (field.style?.width || 'full') === w.key ? 'bg-white text-zinc-950 shadow-sm' : 'text-zinc-400 hover:bg-zinc-900',
               )}
             >
               {w.label}
@@ -451,40 +448,37 @@ function PropertiesPanel({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Field Label</label>
+        <label className="text-xs font-semibold text-zinc-400">Field Label</label>
         <input
           value={field.label}
           onChange={(e) => update('label', e.target.value)}
-          className="w-full px-3 py-2 rounded-xl text-sm outline-none font-medium"
-          style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+          className="w-full px-3 py-2.5 rounded-xl text-xs outline-none font-semibold bg-zinc-900 border border-zinc-800 text-white focus:border-zinc-500"
         />
       </div>
 
       {!['heading', 'divider', 'hidden'].includes(field.type) && (
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Placeholder</label>
+          <label className="text-xs font-semibold text-zinc-400">Placeholder</label>
           <input
             value={field.placeholder ?? ''}
             onChange={(e) => update('placeholder', e.target.value)}
-            className="w-full px-3 py-2 rounded-xl text-sm outline-none"
-            style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            className="w-full px-3 py-2.5 rounded-xl text-xs outline-none bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-zinc-500"
           />
         </div>
       )}
 
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Help Description</label>
+        <label className="text-xs font-semibold text-zinc-400">Help Description</label>
         <input
           value={field.description ?? ''}
           onChange={(e) => update('description', e.target.value)}
-          className="w-full px-3 py-2 rounded-xl text-sm outline-none"
-          style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+          className="w-full px-3 py-2.5 rounded-xl text-xs outline-none bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-zinc-500"
         />
       </div>
 
       {hasOptions && (
         <div className="space-y-2 pt-2">
-          <label className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>Options List</label>
+          <label className="text-xs font-semibold text-zinc-400">Options List</label>
           {(field.options ?? []).map((opt, i) => (
             <div key={opt.id} className="flex gap-2">
               <input
@@ -494,15 +488,13 @@ function PropertiesPanel({
                   updated[i] = { ...opt, label: e.target.value, value: e.target.value };
                   update('options', updated);
                 }}
-                className="flex-1 px-3 py-1.5 rounded-lg text-sm outline-none"
-                style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                className="flex-1 px-3 py-2 rounded-xl text-xs outline-none bg-zinc-900 border border-zinc-800 text-white focus:border-zinc-500"
               />
               <button
                 onClick={() => update('options', (field.options ?? []).filter((_, idx) => idx !== i))}
-                className="w-7 h-7 rounded flex items-center justify-center hover:bg-red-500/10"
-                style={{ color: 'var(--destructive)' }}
+                className="w-8 h-8 rounded-xl flex items-center justify-center bg-zinc-900 border border-zinc-800 text-red-400 hover:bg-red-500/10 transition-colors"
               >
-                <Trash2 size={12} />
+                <Trash2 size={13} />
               </button>
             </div>
           ))}
@@ -511,24 +503,23 @@ function PropertiesPanel({
               const newOpt = { id: generateId(), label: `Option ${(field.options?.length ?? 0) + 1}`, value: `Option ${(field.options?.length ?? 0) + 1}` };
               update('options', [...(field.options ?? []), newOpt]);
             }}
-            className="w-full text-xs font-semibold flex items-center justify-center gap-1 py-2 rounded-xl border border-dashed"
-            style={{ borderColor: 'var(--border)', color: 'var(--primary)' }}
+            className="w-full text-xs font-bold flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors"
           >
             <Plus size={12} /> Add New Option
           </button>
         </div>
       )}
 
-      <div className="space-y-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-        <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>Validation Rules</h4>
+      <div className="space-y-3 pt-3 border-t border-zinc-800">
+        <h4 className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Validation Rules</h4>
         <label className="flex items-center gap-2.5 cursor-pointer">
           <input
             type="checkbox"
             checked={field.validation?.required ?? false}
             onChange={(e) => updateValidation('required', e.target.checked)}
-            className="w-4 h-4 accent-[var(--primary)]"
+            className="w-4 h-4 rounded border-zinc-800 bg-zinc-900 text-white accent-white"
           />
-          <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Required Field</span>
+          <span className="text-xs font-semibold text-zinc-300">Required Field</span>
         </label>
       </div>
     </div>
