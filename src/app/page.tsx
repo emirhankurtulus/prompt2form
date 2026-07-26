@@ -100,13 +100,13 @@ export default function LandingPage() {
             ) : (
               <>
                 <Link
-                  href="/auth/sign-in"
+                  href="/sign-in"
                   className="px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-all"
                 >
                   Sign In
                 </Link>
                 <Link
-                  href="/auth/sign-up"
+                  href="/sign-up"
                   className="px-4 py-2 rounded-xl text-xs font-bold text-zinc-950 bg-white hover:bg-zinc-200 transition-all flex items-center gap-1"
                 >
                   Get Started <ArrowRight size={13} />
@@ -138,13 +138,13 @@ export default function LandingPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Link
-              href={isAuthenticated ? '/dashboard/forms/new' : '/auth/sign-up'}
+              href={isAuthenticated ? '/dashboard/forms/new' : '/sign-up'}
               className="px-5 py-3 rounded-xl font-bold text-zinc-950 text-xs bg-white hover:bg-zinc-200 transition-all flex items-center gap-2 shadow-sm"
             >
               <Wand2 size={15} /> Create Form with AI
             </Link>
             <Link
-              href={isAuthenticated ? '/dashboard' : '/auth/sign-in'}
+              href={isAuthenticated ? '/dashboard' : '/sign-in'}
               className="px-5 py-3 rounded-xl font-semibold text-zinc-300 hover:text-white border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 transition-all flex items-center gap-2 text-xs"
             >
               <Layout size={15} /> Open Dashboard
