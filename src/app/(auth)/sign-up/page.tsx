@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Mail, Lock, User, CheckCircle2 } from 'lucide-react';
-import { AuthInput, AuthButton } from '@/components/auth/AuthComponents';
+import { Mail, Lock, User, CheckCircle2, Loader2 } from 'lucide-react';
+import { AuthInput, AuthButton, AuthDivider } from '@/components/auth/AuthComponents';
+import { useAuthStore } from '@/store/authStore';
 
 const SignUpSchema = z
   .object({
@@ -28,9 +30,13 @@ const SignUpSchema = z
 type SignUpForm = z.infer<typeof SignUpSchema>;
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser);
   const [submitted, setSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const {
     register,
@@ -52,6 +58,72 @@ export default function SignUpPage() {
 
   const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength];
   const strengthColor = ['', '#ef4444', '#f59e0b', '#3b82f6', '#22c55e'][passwordStrength];
+
+  // Load Google Identity Services Script
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleResponse,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signup-btn'),
+          { 
+            theme: 'dark', 
+            size: 'large', 
+            width: '380',
+            text: 'signup_with',
+            shape: 'rectangular'
+          }
+        );
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleGoogleResponse = async (response: any) => {
+    setIsGoogleLoading(true);
+    setGeneralError(null);
+
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential }),
+      });
+
+      const json = await res.json();
+
+      if (!json.success) {
+        setGeneralError(json.error.message || 'Google authentication failed.');
+        toast.error(json.error.message || 'Google authentication failed.');
+        return;
+      }
+
+      setUser(json.data.user);
+      toast.success('Account created successfully with Google!');
+      router.push('/dashboard');
+    } catch {
+      toast.error('Google sign up failed. Please try again.');
+      setGeneralError('Google sign up failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const onSubmit = async (data: SignUpForm) => {
     setIsLoading(true);
@@ -125,6 +197,27 @@ export default function SignUpPage() {
           Free forever. 4 forms per month included.
         </p>
       </div>
+
+      {generalError && (
+        <div className="rounded-xl p-3 flex items-center gap-2.5 text-xs bg-red-500/10 border border-red-500/20 text-red-400">
+          <span>{generalError}</span>
+        </div>
+      )}
+
+      {/* Google Login Button */}
+      {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+        <div className="space-y-4">
+          <div className="relative w-full min-h-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+            {isGoogleLoading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/80">
+                <Loader2 size={16} className="animate-spin text-white" />
+              </div>
+            )}
+            <div id="google-signup-btn" className="w-full flex justify-center z-10" />
+          </div>
+          <AuthDivider text="or sign up with email" />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <AuthInput

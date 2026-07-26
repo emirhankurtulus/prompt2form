@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Mail, Lock, AlertCircle, CheckCircle2, Loader2, Send } from 'lucide-react';
-import { AuthInput, AuthButton } from '@/components/auth/AuthComponents';
+import { AuthInput, AuthButton, AuthDivider } from '@/components/auth/AuthComponents';
 import { useAuthStore } from '@/store/authStore';
 
 const LoginSchema = z.object({
@@ -18,10 +18,17 @@ const LoginSchema = z.object({
 
 type LoginForm = z.infer<typeof LoginSchema>;
 
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
 export default function SignInPage() {
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   // Unverified email state
   const [emailNotVerified, setEmailNotVerified] = useState(false);
@@ -37,6 +44,73 @@ export default function SignInPage() {
     setError,
     getValues,
   } = useForm<LoginForm>({ resolver: zodResolver(LoginSchema) });
+
+  // Load Google Identity Services Script
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    // Dynamically load Google script
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleGoogleResponse,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById('google-signin-btn'),
+          { 
+            theme: 'dark', 
+            size: 'large', 
+            width: '380',
+            text: 'signin_with',
+            shape: 'rectangular'
+          }
+        );
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handleGoogleResponse = async (response: any) => {
+    setIsGoogleLoading(true);
+    setGeneralError(null);
+
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential }),
+      });
+
+      const json = await res.json();
+
+      if (!json.success) {
+        setGeneralError(json.error.message || 'Google authentication failed.');
+        toast.error(json.error.message || 'Google authentication failed.');
+        return;
+      }
+
+      setUser(json.data.user);
+      toast.success('Signed in with Google!');
+      router.push('/dashboard');
+    } catch {
+      toast.error('Google sign in failed. Please try again.');
+      setGeneralError('Google sign in failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
@@ -162,6 +236,21 @@ export default function SignInPage() {
         <div className="rounded-xl p-3 flex items-center gap-2.5 text-xs bg-red-500/10 border border-red-500/20 text-red-400">
           <AlertCircle size={15} className="flex-shrink-0" />
           <span>{generalError}</span>
+        </div>
+      )}
+
+      {/* Google Login Button */}
+      {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
+        <div className="space-y-4">
+          <div className="relative w-full min-h-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+            {isGoogleLoading && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-zinc-950/80">
+                <Loader2 size={16} className="animate-spin text-white" />
+              </div>
+            )}
+            <div id="google-signin-btn" className="w-full flex justify-center z-10" />
+          </div>
+          <AuthDivider text="or sign in with email" />
         </div>
       )}
 

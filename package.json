@@ -41,6 +41,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
     "framer-motion": "^12.42.2",
+    "google-auth-library": "^10.9.1",
     "immer": "^11.1.15",
     "jose": "^6.2.4",
     "lucide-react": "^1.26.0",
