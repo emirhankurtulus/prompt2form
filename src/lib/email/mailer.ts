@@ -13,7 +13,7 @@ function getTransporter() {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
     },
-    connectionTimeout: 10000, // 10s connection timeout for serverless
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
     tls: {
@@ -30,7 +30,7 @@ function getAppUrl() {
   return process.env.NEXT_PUBLIC_APP_URL || 'https://prompt2form.vercel.app';
 }
 
-// ─── Base Email Template (Bulletproof HTML) ──────────────────────────────────
+// ─── Base Email Template ──────────────────────────────────────────────────────
 
 function renderEmailTemplate({
   badgeText,
@@ -108,6 +108,7 @@ export async function sendVerifyEmail(
   rawToken: string,
 ): Promise<void> {
   const verifyUrl = `${getAppUrl()}/verify-email/${rawToken}`;
+  const smtpUser = getFromAddress();
 
   const html = renderEmailTemplate({
     badgeText: 'Account Verification',
@@ -123,13 +124,20 @@ export async function sendVerifyEmail(
   try {
     const transporter = getTransporter();
     const info = await transporter.sendMail({
-      from: getFromAddress(),
-      sender: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
-      replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
+      from: smtpUser,
       to,
       subject: 'Verify your Prompt2Form account',
       text,
       html,
+      // MailEnable / Webmail parity configuration
+      envelope: {
+        from: smtpUser,
+        to: [to],
+      },
+      headers: {
+        'X-Mailer': 'Nodemailer',
+        'X-Priority': '3',
+      },
     });
 
     console.log('[sendVerifyEmail] Email sent cleanly to:', to, 'MessageId:', info.messageId);
@@ -147,6 +155,7 @@ export async function sendResetPasswordEmail(
   rawToken: string,
 ): Promise<void> {
   const resetUrl = `${getAppUrl()}/reset-password/${rawToken}`;
+  const smtpUser = getFromAddress();
 
   const html = renderEmailTemplate({
     badgeText: 'Password Reset',
@@ -159,17 +168,29 @@ export async function sendResetPasswordEmail(
 
   const text = `Hi ${name},\n\nWe received a request to reset your Prompt2Form password. Click the link below to choose a new password:\n\n${resetUrl}\n\nThis link is valid for 1 hour.`;
 
-  const transporter = getTransporter();
-  const info = await transporter.sendMail({
-    from: getFromAddress(),
-    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
-    to,
-    subject: 'Reset your Prompt2Form password',
-    text,
-    html,
-  });
+  try {
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: smtpUser,
+      to,
+      subject: 'Reset your Prompt2Form password',
+      text,
+      html,
+      envelope: {
+        from: smtpUser,
+        to: [to],
+      },
+      headers: {
+        'X-Mailer': 'Nodemailer',
+        'X-Priority': '3',
+      },
+    });
 
-  console.log('[sendResetPasswordEmail] Email sent cleanly. MessageId:', info.messageId);
+    console.log('[sendResetPasswordEmail] Email sent cleanly. MessageId:', info.messageId);
+  } catch (err) {
+    console.error('[sendResetPasswordEmail Error]:', err);
+    throw err;
+  }
 }
 
 // ─── Send Form Response Notification Email ────────────────────────────────────
@@ -181,6 +202,7 @@ export async function sendFormResponseNotification(
   formId: string,
 ): Promise<void> {
   const responsesUrl = `${getAppUrl()}/dashboard/forms/${formId}/responses`;
+  const smtpUser = getFromAddress();
 
   const answersHtml = Object.entries(answers)
     .map(
@@ -192,7 +214,7 @@ export async function sendFormResponseNotification(
   const html = `<!DOCTYPE html>
 <html>
 <body style="margin:0; padding:20px; background:#09090b; font-family:sans-serif; color:#ffffff;">
-  <div style="max-width:560px; margin:0 auto; background:#121215; border:1px solid #27272a; border-radius:16px; p-6; padding:24px;">
+  <div style="max-width:560px; margin:0 auto; background:#121215; border:1px solid #27272a; border-radius:16px; padding:24px;">
     <h2 style="margin:0 0 8px 0; font-size:20px; color:#ffffff;">New Response Received! 🎉</h2>
     <p style="margin:0 0 16px 0; font-size:14px; color:#a1a1aa;">Someone submitted your form <strong>"${formTitle}"</strong>.</p>
     <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:20px; border-collapse:collapse;">
@@ -207,15 +229,27 @@ export async function sendFormResponseNotification(
     .map(([k, v]) => `${k}: ${v}`)
     .join('\n')}\n\nView details: ${responsesUrl}`;
 
-  const transporter = getTransporter();
-  const info = await transporter.sendMail({
-    from: getFromAddress(),
-    replyTo: process.env.SMTP_USER || 'hello@emirhankurtulus.com',
-    to,
-    subject: `[New Response] ${formTitle}`,
-    text,
-    html,
-  });
+  try {
+    const transporter = getTransporter();
+    const info = await transporter.sendMail({
+      from: smtpUser,
+      to,
+      subject: `[New Response] ${formTitle}`,
+      text,
+      html,
+      envelope: {
+        from: smtpUser,
+        to: [to],
+      },
+      headers: {
+        'X-Mailer': 'Nodemailer',
+        'X-Priority': '3',
+      },
+    });
 
-  console.log('[sendFormResponseNotification] Email sent cleanly. MessageId:', info.messageId);
+    console.log('[sendFormResponseNotification] Email sent cleanly. MessageId:', info.messageId);
+  } catch (err) {
+    console.error('[sendFormResponseNotification Error]:', err);
+    throw err;
+  }
 }
